@@ -1,14 +1,45 @@
-name: database CI
+name: Build, Scan, Publish
 
 on:
- workflow_dispatch:
- 
- 
+  workflow_dispatch:
+  #push:
+   # branches:
+    #  - main
 jobs:
-
-    trigger_database: 
+  build:
+    name: Build, Scan, Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
       
-       uses: viveksundar5/Database/.github/workflows/main.yml@main
+    steps:
+      - name: Checkout from Repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          
+      - name: Reformat SQL Files
+        uses: credfeto/action-sql-format@v1.4.1
+          
+          
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+          
+          
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=test-maven-project
+         
+      #- name: Publish to GitHub Packages Apache Maven
+        #run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
+        #env:
+         # GITHUB_TOKEN: ${{ github.token }}
       
-       secrets:
-         Workflow2_PAT_TOKEN_GITHUB: ${{ secrets.Workflow2_PAT_TOKEN_GITHUB }}
