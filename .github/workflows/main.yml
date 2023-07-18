@@ -4,7 +4,7 @@ on:
   workflow_call:
     secrets:
       Workflow2_PAT_TOKEN_GITHUB:
-        required: true
+              required: true
 
 jobs:
   build:
