@@ -18,8 +18,8 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
           
-      - name: Reformat SQL Files
-        uses: credfeto/action-sql-format@v1.4.1
+      #- name: Reformat SQL Files
+        #uses: credfeto/action-sql-format@v1.4.1
           
           
       - name: Cache SonarQube packages
